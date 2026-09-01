@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.env
+.env.local
+pkgs/cli/wallet-cache/
+pkgs/cli/logs/
+pkgs/cli/midnight-level-db/
+pkgs/contract/src/managed/
+pkgs/app/public/managed/
+*.tsbuildinfo
+bun.lock
+
+# VPS deploy — staged locally, never committed
+vps-deploy/
+docker-compose.vps.yml
+Dockerfile
+nginx.conf
+scripts/
+docs/
+.git-history-marker

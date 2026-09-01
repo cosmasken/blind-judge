@@ -1,0 +1,33 @@
+{
+  "name": "blind-judge",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "bun@1.2.0",
+  "workspaces": [
+    "pkgs/*"
+  ],
+  "scripts": {
+    "app": "bun run --cwd pkgs/app",
+    "cli": "bun run --cwd pkgs/cli",
+    "contract": "bun run --cwd pkgs/contract",
+    "dev": "bun run --cwd pkgs/app dev",
+    "sync-keys": "mkdir -p pkgs/app/public/managed/judge && cp -Rf pkgs/contract/src/managed/judge/keys pkgs/app/public/managed/judge/ && cp -Rf pkgs/contract/src/managed/judge/zkir pkgs/app/public/managed/judge/",
+    "build": "bun run --cwd pkgs/contract build && bun run sync-keys && bun run --cwd pkgs/shared build && bun run --cwd pkgs/cli build && bun run --cwd pkgs/app build",
+    "build:app": "bun run --cwd pkgs/contract build && bun run sync-keys && bun run --cwd pkgs/shared build && bun run --cwd pkgs/app build",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "test": "bun run --cwd pkgs/contract test",
+    "typecheck": "bun run --cwd pkgs/shared build && bun run --cwd pkgs/app build && bun run --cwd pkgs/cli typecheck && bun run --cwd pkgs/contract build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.12",
+    "cli": "workspace:*",
+    "ts-node": "^10.9.2"
+  },
+  "overrides": {
+    "smoldot": "npm:empty-npm-package@^1.0.0",
+    "@midnight-ntwrk/wallet-sdk-address-format": "3.1.0",
+    "@midnight-ntwrk/ledger-v8": "8.1.0",
+    "effect": "3.21.4"
+  }
+}
