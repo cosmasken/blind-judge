@@ -1,0 +1,160 @@
+pragma language_version >= 0.16 && <= 0.22;
+
+import CompactStandardLibrary;
+
+export enum JudgingState { waiting, committed, finished, cancelled }
+
+export ledger organiser_key:    Bytes<32>;
+export ledger judge_count:      Uint<8>;
+export ledger judges_joined:    Uint<8>;
+export ledger judges_committed: Uint<8>;
+export ledger judges_revealed:  Uint<8>;
+export ledger score_sum:        Uint<64>;
+export ledger final_score:      Uint<8>;
+export ledger state:            JudgingState;
+export ledger judging_over:     Boolean;
+
+// slots 0-4
+export ledger key0: Bytes<32>; export ledger key1: Bytes<32>; export ledger key2: Bytes<32>; export ledger key3: Bytes<32>; export ledger key4: Bytes<32>;
+export ledger commit0: Bytes<32>; export ledger commit1: Bytes<32>; export ledger commit2: Bytes<32>; export ledger commit3: Bytes<32>; export ledger commit4: Bytes<32>;
+export ledger score0: Bytes<32>; export ledger score1: Bytes<32>; export ledger score2: Bytes<32>; export ledger score3: Bytes<32>; export ledger score4: Bytes<32>;
+export ledger revealed0: Boolean; export ledger revealed1: Boolean; export ledger revealed2: Boolean; export ledger revealed3: Boolean; export ledger revealed4: Boolean;
+
+witness local_secret_key():                                  Bytes<32>;
+witness get_my_score():                                      Bytes<32>;
+witness get_my_salt():                                       Bytes<32>;
+witness store_score_and_salt(s: Bytes<32>, salt: Bytes<32>): [];
+witness compute_average(sum: Uint<64>, count: Uint<8>):      Uint<8>;
+
+export pure circuit derive_pk(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([pad(32, "judge:pk:v1"), sk]);
+}
+
+pure circuit make_commit(score: Bytes<32>, salt: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([score, salt]);
+}
+
+export circuit initialize(organiser_pk: Bytes<32>, count: Uint<8>): [] {
+  assert(count >= 2 && count <= 5, "judge_count must be 2-5");
+  organiser_key    = disclose(organiser_pk);
+  judge_count      = disclose(count);
+  judges_joined    = 0;
+  judges_committed = 0;
+  judges_revealed  = 0;
+  score_sum        = 0;
+  state            = JudgingState.waiting;
+  judging_over     = false;
+}
+
+export circuit commit(): [] {
+  assert(!judging_over,                 "Judging is already over");
+  assert(state == JudgingState.waiting, "Not in waiting state");
+  assert(judges_joined < judge_count,   "All judge slots filled");
+
+  const sk         = local_secret_key();
+  const pk         = derive_pk(sk);
+  const my_score   = get_my_score();
+  const my_salt    = get_my_salt();
+  const commitment = make_commit(my_score, my_salt);
+  store_score_and_salt(my_score, my_salt);
+
+  const idx = judges_joined;
+  if (disclose(idx == 0)) { key0 = disclose(pk); commit0 = disclose(commitment); }
+  if (disclose(idx == 1)) { key1 = disclose(pk); commit1 = disclose(commitment); }
+  if (disclose(idx == 2)) { key2 = disclose(pk); commit2 = disclose(commitment); }
+  if (disclose(idx == 3)) { key3 = disclose(pk); commit3 = disclose(commitment); }
+  if (disclose(idx == 4)) { key4 = disclose(pk); commit4 = disclose(commitment); }
+
+  judges_committed = (judges_committed + 1) as Uint<8>;
+  judges_joined    = (judges_joined + 1) as Uint<8>;
+  if (disclose(judges_committed == judge_count)) {
+    state = JudgingState.committed;
+  }
+}
+
+export circuit reveal(): [] {
+  assert(!judging_over,                   "Judging is already over");
+  assert(state == JudgingState.committed, "Not in committed state");
+
+  const sk       = local_secret_key();
+  const pk       = derive_pk(sk);
+  const my_score = get_my_score();
+  const my_salt  = get_my_salt();
+  const computed = make_commit(my_score, my_salt);
+
+  const is0 = disclose(pk == key0);
+  const is1 = disclose(pk == key1);
+  const is2 = disclose(pk == key2);
+  const is3 = disclose(pk == key3);
+  const is4 = disclose(pk == key4);
+  assert(is0 || is1 || is2 || is3 || is4, "Caller is not a registered judge");
+
+  if (is0) {
+    assert(!revealed0, "Already revealed");
+    assert(disclose(computed == commit0), "Commitment mismatch");
+    score0    = disclose(my_score);
+    revealed0 = true;
+  }
+  if (is1) {
+    assert(!revealed1, "Already revealed");
+    assert(disclose(computed == commit1), "Commitment mismatch");
+    score1    = disclose(my_score);
+    revealed1 = true;
+  }
+  if (is2) {
+    assert(!revealed2, "Already revealed");
+    assert(disclose(computed == commit2), "Commitment mismatch");
+    score2    = disclose(my_score);
+    revealed2 = true;
+  }
+  if (is3) {
+    assert(!revealed3, "Already revealed");
+    assert(disclose(computed == commit3), "Commitment mismatch");
+    score3    = disclose(my_score);
+    revealed3 = true;
+  }
+  if (is4) {
+    assert(!revealed4, "Already revealed");
+    assert(disclose(computed == commit4), "Commitment mismatch");
+    score4    = disclose(my_score);
+    revealed4 = true;
+  }
+
+  score_sum       = (score_sum + disclose(my_score[31] as Uint<64>)) as Uint<64>;
+  judges_revealed = (judges_revealed + 1) as Uint<8>;
+
+  if (disclose(judges_revealed == judge_count)) {
+    final_score  = disclose(compute_average(score_sum, judge_count));
+    judging_over = true;
+    state        = JudgingState.finished;
+  }
+}
+
+export circuit cancel(): [] {
+  const sk = local_secret_key();
+  const pk = derive_pk(sk);
+  assert(disclose(pk == organiser_key), "Only organiser can cancel");
+  assert(!judging_over,                 "Judging already finished");
+  state        = JudgingState.cancelled;
+  judging_over = true;
+}
+// derive_pk + make_commit
+// initialize
+// commit
+// reveal + cancel
+// fix: casts
+// fix: average witness
+// permissionless commit
+// removed register_judge
+// fix judges_joined
+// fix score_sum cast
+// derive_pk + make_commit
+// initialize
+// commit
+// reveal + cancel
+// fix: casts
+// fix: average witness
+// permissionless commit
+// removed register_judge
+// fix judges_joined
+// fix score_sum cast
