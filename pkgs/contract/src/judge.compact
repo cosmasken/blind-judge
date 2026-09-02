@@ -159,3 +159,4 @@ export circuit cancel(): [] {
 // fix judges_joined
 // fix score_sum cast
 // derive_pk + make_commit
+// initialize
