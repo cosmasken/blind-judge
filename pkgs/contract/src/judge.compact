@@ -160,3 +160,4 @@ export circuit cancel(): [] {
 // fix score_sum cast
 // derive_pk + make_commit
 // initialize
+// commit
