@@ -161,3 +161,4 @@ export circuit cancel(): [] {
 // derive_pk + make_commit
 // initialize
 // commit
+// reveal + cancel
