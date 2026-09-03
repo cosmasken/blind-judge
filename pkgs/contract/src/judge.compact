@@ -162,3 +162,4 @@ export circuit cancel(): [] {
 // initialize
 // commit
 // reveal + cancel
+// fix: casts
