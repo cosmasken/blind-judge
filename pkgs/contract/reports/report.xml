@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="7" failures="0" errors="0" time="0.570646035">
+    <testsuite name="src/test/judge.test.ts" timestamp="2026-09-16T11:32:24.552Z" hostname="groot" tests="7" failures="0" errors="0" skipped="0" time="0.570646035">
+        <testcase classname="src/test/judge.test.ts" name="BlindJudge smart contract &gt; starts in waiting state with no judges joined" time="0.091364795">
+        </testcase>
+        <testcase classname="src/test/judge.test.ts" name="BlindJudge smart contract &gt; state transitions: waiting → committed → finished" time="0.119150792">
+        </testcase>
+        <testcase classname="src/test/judge.test.ts" name="BlindJudge smart contract &gt; commitment is binding: same score + salt → same hash" time="0.10440402">
+        </testcase>
+        <testcase classname="src/test/judge.test.ts" name="BlindJudge smart contract &gt; commitment is hiding: same score + different salt → different hash" time="0.106497838">
+        </testcase>
+        <testcase classname="src/test/judge.test.ts" name="BlindJudge smart contract &gt; rejects a third commit after both judges committed" time="0.069298685">
+        </testcase>
+        <testcase classname="src/test/judge.test.ts" name="BlindJudge smart contract &gt; rejects double reveal from same judge" time="0.07631115">
+        </testcase>
+        <testcase classname="src/test/judge.test.ts" name="BlindJudge smart contract &gt; encodeScore round-trips correctly" time="0.000423477">
+        </testcase>
+    </testsuite>
+</testsuites>
