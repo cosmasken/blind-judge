@@ -163,3 +163,4 @@ export circuit cancel(): [] {
 // commit
 // reveal + cancel
 // fix: casts
+// fix: average witness
