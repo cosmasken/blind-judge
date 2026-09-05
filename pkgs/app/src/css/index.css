@@ -1,0 +1,128 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  color-scheme: dark;
+
+  /* Midnight dark theme */
+  --background: #0a0a0f;
+  --foreground: #f8fafc;
+  --card: #12121a;
+  --card-foreground: #f8fafc;
+  --popover: #12121a;
+  --popover-foreground: #f8fafc;
+  --primary: #a855f7;
+  --primary-foreground: #ffffff;
+  --secondary: #1a1a26;
+  --secondary-foreground: #f8fafc;
+  --muted: #1a1a26;
+  --muted-foreground: #94a3b8;
+  --accent: #a855f7;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --border: #1e1e2e;
+  --input: #1e1e2e;
+  --ring: #a855f7;
+  --radius: 0.5rem;
+
+  --sidebar: #0d0d18;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #a855f7;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1a1a26;
+  --sidebar-accent-foreground: #f8fafc;
+  --sidebar-border: #1e1e2e;
+  --sidebar-ring: #a855f7;
+
+  /* midnight sub-accent (cyan) */
+  --cyan: #22d3ee;
+
+  --sans: "Geist Variable", system-ui, sans-serif;
+  --mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@theme inline {
+  --font-sans: var(--sans);
+  --font-mono: var(--mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-cyan: var(--cyan);
+  --radius-sm: calc(var(--radius) * 0.75);
+  --radius-md: calc(var(--radius) * 1.0);
+  --radius-lg: calc(var(--radius) * 1.5);
+  --radius-xl: calc(var(--radius) * 2.0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    margin: 0;
+  }
+  html {
+    @apply font-sans;
+  }
+  #root {
+    min-height: 100svh;
+  }
+}
+
+@keyframes zk-scan {
+  0%   { top: 0%; opacity: 0.9; }
+  50%  { opacity: 1; }
+  100% { top: 100%; opacity: 0.9; }
+}
+
+@keyframes progress-grow {
+  0%   { width: 0%; }
+  100% { width: 100%; }
+}
+
+@keyframes fade-in-up {
+  0%   { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.2; }
+  50%       { opacity: 0.8; }
+}
+
+.animate-zk-scan {
+  animation: zk-scan 1.5s ease-in-out infinite;
+}
+
+.animate-progress-grow {
+  animation: progress-grow 3s linear forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease forwards;
+}
