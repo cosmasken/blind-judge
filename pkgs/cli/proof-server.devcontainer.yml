@@ -1,0 +1,7 @@
+services:
+  proof-server:
+    image: 'midnightntwrk/proof-server:8.0.3'
+    command: ['midnight-proof-server -v']
+    network_mode: 'container:${DEVCONTAINER_HOST_ID}'
+    environment:
+      RUST_BACKTRACE: 'full'
