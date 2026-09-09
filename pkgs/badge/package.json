@@ -1,0 +1,21 @@
+{
+  "name": "badge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "node --no-warnings --experimental-specifier-resolution=node --loader ts-node/esm src/index.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.14",
+    "contract": "*",
+    "hono": "^4.12.27",
+    "shared": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "~6.0.2"
+  }
+}
