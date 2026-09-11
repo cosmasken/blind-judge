@@ -167,3 +167,4 @@ export circuit cancel(): [] {
 // permissionless commit
 // removed register_judge
 // fix judges_joined
+// fix score_sum cast
