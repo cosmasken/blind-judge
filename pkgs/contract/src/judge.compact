@@ -165,3 +165,4 @@ export circuit cancel(): [] {
 // fix: casts
 // fix: average witness
 // permissionless commit
+// removed register_judge
